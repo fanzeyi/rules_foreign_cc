@@ -74,6 +74,8 @@ CC_EXTERNAL_RULE_ATTRIBUTES = {
     # Optional. if true, link all the object files from the static library,
     # even if they are not used.
     "alwayslink": attr.bool(mandatory = False, default = False),
+    # Optional. if true, declare share/ directory as an output to be copied.
+    "include_share_dir": attr.bool(mandatory = False, default = False),
     # Optional link options to be passed up to the dependencies of this library
     "linkopts": attr.string_list(mandatory = False, default = []),
     #
@@ -506,6 +508,9 @@ def _define_outputs(ctx, attrs, lib_name):
     declared_outputs = [out_include_dir] + out_binary_files
     declared_outputs += libraries.static_libraries
     declared_outputs += libraries.shared_libraries + libraries.interface_libraries
+
+    if ctx.attr.include_share_dir:
+        declared_outputs += [ctx.actions.declare_directory(lib_name + "/share")]
 
     return _Outputs(
         out_include_dir = out_include_dir,
